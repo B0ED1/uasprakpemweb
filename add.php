@@ -4,8 +4,6 @@ require_once 'includes/auth.php';
 
 $pageTitle = "Tambah Figure Baru";
 require_once 'config/database.php';
-require_once 'includes/header.php';
-require_once 'includes/navbar.php';
 
 $errors = [];
 
@@ -112,6 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+require_once 'includes/header.php';
+require_once 'includes/navbar.php';
 ?>
 
 <main class="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
