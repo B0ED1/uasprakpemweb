@@ -1,11 +1,5 @@
 <?php
-/**
- * FiguSphere - Delete Action Logic
- * Menghapus data dari database serta membersihkan file foto terkait dari server.
- * Dilindungi oleh session login & pengecekan kepemilikan data.
- */
-
-// Proteksi halaman dengan session login
+// Proteksi halaman dengan login & database config
 require_once 'includes/auth.php';
 require_once 'config/database.php';
 
@@ -19,7 +13,7 @@ if ($id <= 0) {
 }
 
 try {
-    // 1. Ambil nama file foto dan validasi kepemilikan record sebelum menghapus
+    // Ambil nama foto dan validasi hak akses sebelum dihapus
     if ($_SESSION['role'] === 'admin') {
         $stmt = $pdo->prepare("SELECT foto_figure FROM tb_figures WHERE id = :id");
         $stmt->execute(['id' => $id]);
@@ -30,7 +24,7 @@ try {
     $figure = $stmt->fetch();
     
     if ($figure) {
-        // Hapus file gambar dari server jika ada
+        // Hapus berkas foto fisik jika ada
         if (!empty($figure['foto_figure'])) {
             $file_path = 'assets/uploads/' . $figure['foto_figure'];
             if (file_exists($file_path)) {
@@ -38,7 +32,7 @@ try {
             }
         }
         
-        // 2. Hapus record dari database
+        // Hapus data figure dari database
         if ($_SESSION['role'] === 'admin') {
             $delete_stmt = $pdo->prepare("DELETE FROM tb_figures WHERE id = :id");
             $delete_stmt->execute(['id' => $id]);

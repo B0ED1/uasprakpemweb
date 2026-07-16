@@ -1,8 +1,9 @@
 <?php
+// Mulai sesi jika belum aktif
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-// Tentukan judul halaman default jika tidak didefinisikan sebelumnya
+// Judul halaman default jika tidak didefinisikan
 $pageTitle = isset($pageTitle) ? $pageTitle . " | FiguSphere" : "FiguSphere - Figure Collection Manager";
 ?>
 <!DOCTYPE html>
@@ -12,7 +13,7 @@ $pageTitle = isset($pageTitle) ? $pageTitle . " | FiguSphere" : "FiguSphere - Fi
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?></title>
     
-    <!-- Tailwind CSS Play CDN (Untuk kemudahan kostumisasi kelas) -->
+    <!-- Load Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {

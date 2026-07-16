@@ -1,7 +1,5 @@
 <?php
-/**
- * FiguSphere - Register Page
- */
+// Halaman Registrasi FiguSphere
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -22,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama_lengkap = isset($_POST['nama_lengkap']) ? trim($_POST['nama_lengkap']) : '';
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
 
-    // Validasi input
+    // Validasi isian formulir
     if (empty($username) || empty($nama_lengkap) || empty($password)) {
         $error = "Semua input wajib diisi!";
     } elseif (strlen($username) < 4) {
@@ -31,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Password minimal harus 6 karakter.";
     } else {
         try {
-            // Cek apakah username sudah digunakan
+            // Periksa ketersediaan username
             $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM tb_users WHERE username = :username");
             $checkStmt->execute(['username' => $username]);
             $usernameExists = $checkStmt->fetchColumn();
@@ -39,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($usernameExists > 0) {
                 $error = "Username sudah digunakan oleh orang lain!";
             } else {
-                // Hash password & Simpan user baru
+                // Enkripsi password & Daftarkan user baru
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare("INSERT INTO tb_users (username, password, nama_lengkap) VALUES (:username, :password, :nama_lengkap)");
                 $stmt->execute([

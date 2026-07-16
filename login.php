@@ -1,7 +1,5 @@
 <?php
-/**
- * FiguSphere - Login Page
- */
+// Halaman Login FiguSphere
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -29,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
-                // Login sukses, simpan session
+                // Simpan data login ke session
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['nama_lengkap'] = $user['nama_lengkap'];

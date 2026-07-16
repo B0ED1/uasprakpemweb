@@ -67,16 +67,28 @@ if ($is_admin) {
     $list_brands = $list_brands_stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
-// Tangani Pencarian dan Filtering
+// Tangani pencarian dan filtering
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $filter_series = isset($_GET['series']) ? trim($_GET['series']) : '';
 $filter_brand = isset($_GET['brand']) ? trim($_GET['brand']) : '';
 
-$params = [];
+$params = ['current_user_id' => $user_id];
 if ($is_admin) {
-    $query = "SELECT f.*, u.nama_lengkap as owner_name FROM tb_figures f JOIN tb_users u ON f.user_id = u.id WHERE 1=1";
+    $query = "SELECT f.*, u.nama_lengkap as owner_name,
+                     (SELECT COUNT(*) FROM tb_likes WHERE figure_id = f.id) as likes_count,
+                     (SELECT COUNT(*) FROM tb_comments WHERE figure_id = f.id) as comments_count,
+                     (SELECT COUNT(*) FROM tb_likes WHERE figure_id = f.id AND user_id = :current_user_id) as is_liked
+              FROM tb_figures f 
+              JOIN tb_users u ON f.user_id = u.id 
+              WHERE 1=1";
 } else {
-    $query = "SELECT f.*, u.nama_lengkap as owner_name FROM tb_figures f JOIN tb_users u ON f.user_id = u.id WHERE f.user_id = :user_id";
+    $query = "SELECT f.*, u.nama_lengkap as owner_name,
+                     (SELECT COUNT(*) FROM tb_likes WHERE figure_id = f.id) as likes_count,
+                     (SELECT COUNT(*) FROM tb_comments WHERE figure_id = f.id) as comments_count,
+                     (SELECT COUNT(*) FROM tb_likes WHERE figure_id = f.id AND user_id = :current_user_id) as is_liked
+              FROM tb_figures f 
+              JOIN tb_users u ON f.user_id = u.id 
+              WHERE f.user_id = :user_id";
     $params['user_id'] = $user_id;
 }
 
@@ -95,7 +107,7 @@ if ($filter_brand !== '') {
     $params['brand'] = $filter_brand;
 }
 
-// Urutkan berdasarkan koleksi terbaru
+// Urutkan dari koleksi terbaru
 $query .= " ORDER BY f.created_at DESC";
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
@@ -273,18 +285,21 @@ $figures = $stmt->fetchAll();
                     <!-- Figure Image Container -->
                     <?php if (!empty($fig['foto_figure']) && file_exists('assets/uploads/' . $fig['foto_figure'])): ?>
                         <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden group cursor-pointer" 
-                             onclick="openImageModal('assets/uploads/<?= htmlspecialchars($fig['foto_figure']) ?>', '<?= addslashes(htmlspecialchars($fig['nama_figure'])) ?>', '<?= addslashes(htmlspecialchars($fig['karakter'])) ?>', '<?= addslashes(htmlspecialchars($fig['seri_anime'])) ?>', 'Rp <?= number_format($fig['harga'], 0, ',', '.') ?>', '<?= addslashes(htmlspecialchars($fig['skala_ukuran'])) ?>', '<?= addslashes(htmlspecialchars($fig['produsen'])) ?>')"
+                             onclick="openImageModal('assets/uploads/<?= htmlspecialchars($fig['foto_figure']) ?>', '<?= addslashes(htmlspecialchars($fig['nama_figure'])) ?>', '<?= addslashes(htmlspecialchars($fig['karakter'])) ?>', '<?= addslashes(htmlspecialchars($fig['seri_anime'])) ?>', 'Rp <?= number_format($fig['harga'], 0, ',', '.') ?>', '<?= addslashes(htmlspecialchars($fig['skala_ukuran'])) ?>', '<?= addslashes(htmlspecialchars($fig['produsen'])) ?>', '<?= $fig['id'] ?>', <?= $fig['is_liked'] ? 'true' : 'false' ?>, <?= $fig['likes_count'] ?>)"
                              title="Klik untuk memperbesar gambar">
                             <img src="assets/uploads/<?= htmlspecialchars($fig['foto_figure']) ?>" alt="<?= htmlspecialchars($fig['nama_figure']) ?>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <?php else: ?>
-                        <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden group">
-                            <!-- Beautiful SVG Fallback when no image is uploaded -->
+                        <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden group cursor-pointer"
+                             onclick="openImageModal('', '<?= addslashes(htmlspecialchars($fig['nama_figure'])) ?>', '<?= addslashes(htmlspecialchars($fig['karakter'])) ?>', '<?= addslashes(htmlspecialchars($fig['seri_anime'])) ?>', 'Rp <?= number_format($fig['harga'], 0, ',', '.') ?>', '<?= addslashes(htmlspecialchars($fig['skala_ukuran'])) ?>', '<?= addslashes(htmlspecialchars($fig['produsen'])) ?>', '<?= $fig['id'] ?>', <?= $fig['is_liked'] ? 'true' : 'false' ?>, <?= $fig['likes_count'] ?>)"
+                             title="Klik untuk melihat detail">
+                            <!-- SVG Fallback jika foto kosong -->
                             <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-brand-50 to-indigo-50/60 text-brand-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                                 <span class="text-xs font-semibold uppercase tracking-wider text-brand-500/80">FiguSphere figure</span>
                             </div>
+                        </div>
                     <?php endif; ?>
 
                         <!-- Skala Badge -->
@@ -295,10 +310,10 @@ $figures = $stmt->fetchAll();
                         <?php endif; ?>
                     </div>
 
-                    <!-- Figure Details -->
+                    <!-- Detail Figure -->
                     <div class="p-3 sm:p-5 flex-grow flex flex-col justify-between">
                         <div>
-                            <!-- Brand & Series -->
+                            <!-- Brand & Seri -->
                             <div class="flex items-center space-x-1.5 sm:space-x-2 mb-1 sm:mb-1.5 flex-wrap gap-y-1">
                                 <span class="px-1.5 sm:px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wide">
                                     <?= htmlspecialchars($fig['produsen']) ?>
@@ -308,15 +323,33 @@ $figures = $stmt->fetchAll();
                                 </span>
                             </div>
 
-                            <!-- Name -->
+                            <!-- Nama Figure -->
                             <h4 class="text-xs sm:text-base font-bold text-slate-800 leading-snug line-clamp-2 mb-0.5 sm:mb-1" title="<?= htmlspecialchars($fig['nama_figure']) ?>">
                                 <?= htmlspecialchars($fig['nama_figure']) ?>
                             </h4>
 
-                            <!-- Character -->
-                            <p class="text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">
+                            <!-- Karakter -->
+                            <p class="text-[10px] sm:text-xs text-slate-500 mb-1">
                                 Karakter: <span class="font-semibold text-slate-600"><?= htmlspecialchars($fig['karakter']) ?></span>
                             </p>
+
+                            <!-- Like & Comment Quick Metrics -->
+                            <div class="flex items-center space-x-3.5 mt-2 mb-3">
+                                <button type="button" onclick="toggleLike(event, <?= $fig['id'] ?>)" id="like-btn-card-<?= $fig['id'] ?>" class="inline-flex items-center space-x-1.5 text-slate-400 hover:text-rose-500 group focus:outline-none transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" id="like-icon-card-<?= $fig['id'] ?>" class="h-4 w-4 sm:h-4.5 sm:w-4.5 transition-transform duration-200 group-hover:scale-110 <?= $fig['is_liked'] ? 'fill-rose-500 text-rose-500' : 'text-slate-400' ?>" fill="<?= $fig['is_liked'] ? 'currentColor' : 'none' ?>" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                    <span id="like-count-card-<?= $fig['id'] ?>" class="text-[11px] sm:text-xs font-bold text-slate-500 group-hover:text-rose-500"><?= $fig['likes_count'] ?></span>
+                                </button>
+                                <button type="button" 
+                                        onclick="openImageModal('<?= !empty($fig['foto_figure']) && file_exists('assets/uploads/' . $fig['foto_figure']) ? 'assets/uploads/' . htmlspecialchars($fig['foto_figure']) : '' ?>', '<?= addslashes(htmlspecialchars($fig['nama_figure'])) ?>', '<?= addslashes(htmlspecialchars($fig['karakter'])) ?>', '<?= addslashes(htmlspecialchars($fig['seri_anime'])) ?>', 'Rp <?= number_format($fig['harga'], 0, ',', '.') ?>', '<?= addslashes(htmlspecialchars($fig['skala_ukuran'])) ?>', '<?= addslashes(htmlspecialchars($fig['produsen'])) ?>', '<?= $fig['id'] ?>', <?= $fig['is_liked'] ? 'true' : 'false' ?>, <?= $fig['likes_count'] ?>)"
+                                        class="inline-flex items-center space-x-1.5 text-slate-400 hover:text-brand-500 group focus:outline-none transition-colors duration-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-4.5 sm:w-4.5 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                    <span id="comment-count-card-<?= $fig['id'] ?>" class="text-[11px] sm:text-xs font-bold text-slate-500 group-hover:text-brand-500"><?= $fig['comments_count'] ?></span>
+                                </button>
+                            </div>
 
                             <!-- Owner (Only shown to Admin) -->
                             <?php if ($is_admin): ?>
@@ -402,7 +435,7 @@ $figures = $stmt->fetchAll();
         </div>
 
         <!-- Details Pane -->
-        <div class="w-full md:w-2/5 p-6 md:p-8 bg-slate-900 text-white flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/10">
+        <div class="w-full md:w-2/5 p-5 sm:p-6 md:p-8 bg-slate-900 text-white flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/10 overflow-y-auto max-h-[50vh] md:max-h-[600px]">
             <div>
                 <!-- Brand and Series -->
                 <div class="flex items-center space-x-2 mb-3">
@@ -411,31 +444,69 @@ $figures = $stmt->fetchAll();
                 </div>
 
                 <!-- Figure Name -->
-                <h3 id="lightbox-name" class="text-2xl font-extrabold text-white leading-tight mb-4"></h3>
+                <h3 id="lightbox-name" class="text-xl sm:text-2xl font-extrabold text-white leading-tight mb-4"></h3>
 
-                <div class="space-y-3.5 border-t border-white/10 pt-4">
+                <div class="space-y-3 border-t border-white/10 py-3">
                     <!-- Character -->
-                    <div class="flex justify-between items-center text-sm">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
                         <span class="text-slate-400 font-medium">Karakter</span>
                         <span id="lightbox-char" class="font-bold text-slate-200"></span>
                     </div>
 
                     <!-- Scale -->
-                    <div class="flex justify-between items-center text-sm">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
                         <span class="text-slate-400 font-medium">Skala / Ukuran</span>
                         <span id="lightbox-scale" class="font-bold text-slate-200"></span>
                     </div>
 
                     <!-- Value -->
-                    <div class="flex justify-between items-center text-sm">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
                         <span class="text-slate-400 font-medium">Nilai Koleksi</span>
-                        <span id="lightbox-price" class="text-lg font-black text-brand-400"></span>
+                        <span id="lightbox-price" class="text-base sm:text-lg font-black text-brand-400"></span>
                     </div>
+                </div>
+
+                <!-- Like Button -->
+                <div class="border-t border-white/10 py-3 flex items-center justify-between">
+                    <button type="button" id="lightbox-like-btn" class="flex items-center space-x-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl transition-all duration-200 focus:outline-none group">
+                        <svg xmlns="http://www.w3.org/2000/svg" id="lightbox-like-icon" class="h-5 w-5 text-slate-400 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span id="lightbox-like-label" class="text-xs font-semibold text-slate-200">Suka</span>
+                    </button>
+                    <span id="lightbox-likes-count" class="text-xs text-slate-400 font-medium">0 Menyukai</span>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="border-t border-white/10 py-3 flex flex-col">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        Komentar
+                    </h4>
+                    
+                    <!-- Comments List -->
+                    <div id="lightbox-comments-list" class="space-y-3.5 overflow-y-auto max-h-[160px] pr-1.5 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                        <p class="text-xs text-slate-500 italic text-center py-2">Belum ada komentar.</p>
+                    </div>
+                    
+                    <!-- Write Comment Form -->
+                    <form id="lightbox-comment-form" onsubmit="submitComment(event)" class="mt-3.5">
+                        <div class="relative flex items-center">
+                            <input type="text" id="lightbox-comment-input" placeholder="Tulis komentar..." required class="w-full bg-white/5 border border-white/10 text-white placeholder-slate-500 pl-3 pr-10 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200">
+                            <button type="submit" class="absolute right-1 p-1.5 bg-brand-600 hover:bg-brand-500 rounded-lg text-white transition-colors duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <!-- Footer signature or quick tips -->
-            <div class="mt-8 text-[11px] text-slate-500 border-t border-white/5 pt-4 text-center">
+            <!-- Footer signature -->
+            <div class="mt-4 text-[10px] text-slate-500 border-t border-white/5 pt-3 text-center">
                 FiguSphere Premium Lightbox View • Ketuk di luar untuk menutup
             </div>
         </div>

@@ -1,7 +1,5 @@
 <?php
-/**
- * FiguSphere - Quick Account Switcher Helper
- */
+// Fitur Cepat Berpindah Akun
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -30,7 +28,7 @@ if (isset($_GET['id'])) {
     }
 }
 
-// Redirect back to referer or default to dashboard index
+// Redirect kembali ke halaman asal (referer)
 $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'index.php';
 header("Location: " . $referer);
 exit;

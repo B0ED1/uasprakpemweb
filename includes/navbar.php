@@ -1,14 +1,14 @@
 <?php
 $current_page = basename($_SERVER['SCRIPT_NAME']);
 
-// Ambil daftar user untuk quick switcher jika session aktif dan PDO terkoneksi
+// Ambil daftar user untuk quick switcher
 $navbar_users = [];
 if (isset($_SESSION['user_id']) && isset($pdo)) {
     try {
         $stmt_users = $pdo->query("SELECT id, username, nama_lengkap FROM tb_users ORDER BY nama_lengkap");
         $navbar_users = $stmt_users->fetchAll();
     } catch (PDOException $e) {
-        // Abaikan
+        // Abaikan error database jika ada
     }
 }
 ?>

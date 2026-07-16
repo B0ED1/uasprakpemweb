@@ -11,7 +11,7 @@ $errors = [];
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $user_id = $_SESSION['user_id'];
 
-// Cek apakah id figure valid dan ada di database (dan milik user yang bersangkutan)
+// Cek validasi hak akses data figure
 if ($id <= 0) {
     $_SESSION['error'] = "ID Figure tidak valid!";
     header("Location: index.php");
@@ -37,7 +37,7 @@ try {
     die("Error database: " . $e->getMessage());
 }
 
-// Proses update data jika form disubmit
+// Proses form update jika metode POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama_figure = isset($_POST['nama_figure']) ? trim($_POST['nama_figure']) : '';
     $karakter = isset($_POST['karakter']) ? trim($_POST['karakter']) : '';
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $skala_ukuran = isset($_POST['skala_ukuran']) ? trim($_POST['skala_ukuran']) : '';
     $harga = isset($_POST['harga']) ? (int) $_POST['harga'] : 0;
     
-    // Validasi input wajib
+    // Validasi field wajib
     if (empty($nama_figure)) {
         $errors['nama_figure'] = 'Nama figure wajib diisi.';
     }
@@ -63,10 +63,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['harga'] = 'Harga harus berupa angka lebih besar dari 0.';
     }
 
-    // Default gunakan foto lama
+    // Default gunakan foto yang sudah ada
     $foto_name = $figure['foto_figure'];
     
-    // Cek jika ada upload foto baru
+    // Proses upload jika ada file foto baru
     if (isset($_FILES['foto_figure']) && $_FILES['foto_figure']['error'] !== UPLOAD_ERR_NO_FILE) {
         if ($_FILES['foto_figure']['error'] === UPLOAD_ERR_OK) {
             $file_tmp = $_FILES['foto_figure']['tmp_name'];
@@ -78,15 +78,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if (!in_array($file_ext, $allowed_extensions)) {
                 $errors['foto_figure'] = 'Format foto tidak valid. Hanya diperbolehkan: JPG, JPEG, PNG, WEBP, GIF.';
-            } elseif ($file_size > 2 * 1024 * 1024) { // Limit 2MB
+            } elseif ($file_size > 2 * 1024 * 1024) { // Batas 2MB
                 $errors['foto_figure'] = 'Ukuran foto terlalu besar. Maksimal adalah 2MB.';
             } else {
-                // Berikan nama file unik
+                // Generate nama file baru
                 $foto_name = time() . '_' . bin2hex(random_bytes(4)) . '.' . $file_ext;
                 $upload_dir = 'assets/uploads/';
                 
                 if (move_uploaded_file($file_tmp, $upload_dir . $foto_name)) {
-                    // Hapus foto lama dari server jika ada dan file-nya memang ada
+                    // Hapus file foto lama di server jika ada
                     if (!empty($figure['foto_figure']) && file_exists($upload_dir . $figure['foto_figure'])) {
                         unlink($upload_dir . $figure['foto_figure']);
                     }
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         } else {
-            // Tangani error upload dari PHP
+            // Evaluasi error upload PHP
             switch ($_FILES['foto_figure']['error']) {
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Jika tidak ada error, perbarui database
+    // Perbarui data di database jika tidak ada error validasi
     if (empty($errors)) {
         try {
             if ($_SESSION['role'] === 'admin') {

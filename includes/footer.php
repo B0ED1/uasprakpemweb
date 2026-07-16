@@ -14,7 +14,7 @@
     </div>
 </footer>
 
-<!-- Main Custom Script File -->
+<!-- Script utama main.js -->
 <script src="assets/js/main.js?v=<?= time() ?>"></script>
 </body>
 </html>

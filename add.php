@@ -9,7 +9,7 @@ require_once 'includes/navbar.php';
 
 $errors = [];
 
-// Proses form jika metode POST
+// Proses data form jika metode POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama_figure = isset($_POST['nama_figure']) ? trim($_POST['nama_figure']) : '';
     $karakter = isset($_POST['karakter']) ? trim($_POST['karakter']) : '';
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $skala_ukuran = isset($_POST['skala_ukuran']) ? trim($_POST['skala_ukuran']) : '';
     $harga = isset($_POST['harga']) ? (int) $_POST['harga'] : 0;
     
-    // Validasi input wajib
+    // Validasi field yang wajib diisi
     if (empty($nama_figure)) {
         $errors['nama_figure'] = 'Nama figure wajib diisi.';
     }
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['harga'] = 'Harga harus berupa angka lebih besar dari 0.';
     }
 
-    // Penanganan upload file foto
+    // Proses upload berkas foto
     $foto_name = null;
     if (isset($_FILES['foto_figure']) && $_FILES['foto_figure']['error'] !== UPLOAD_ERR_NO_FILE) {
         if ($_FILES['foto_figure']['error'] === UPLOAD_ERR_OK) {
@@ -48,14 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if (!in_array($file_ext, $allowed_extensions)) {
                 $errors['foto_figure'] = 'Format foto tidak valid. Hanya diperbolehkan: JPG, JPEG, PNG, WEBP, GIF.';
-            } elseif ($file_size > 2 * 1024 * 1024) { // Limit 2MB
+            } elseif ($file_size > 2 * 1024 * 1024) { // Batas limit 2MB
                 $errors['foto_figure'] = 'Ukuran foto terlalu besar. Maksimal adalah 2MB.';
             } else {
-                // Berikan nama file unik untuk menghindari duplikasi
+                // Generate nama berkas unik
                 $foto_name = time() . '_' . bin2hex(random_bytes(4)) . '.' . $file_ext;
                 $upload_dir = 'assets/uploads/';
                 
-                // Buat folder jika belum ada
+                // Buat direktori upload jika belum ada
                 if (!is_dir($upload_dir)) {
                     mkdir($upload_dir, 0755, true);
                 }
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         } else {
-            // Tangani error upload dari PHP
+            // Evaluasi kode error upload PHP
             switch ($_FILES['foto_figure']['error']) {
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Jika tidak ada error, simpan data ke database
+    // Simpan ke database jika tidak ada error validasi
     if (empty($errors)) {
         try {
             $stmt = $pdo->prepare("INSERT INTO tb_figures (user_id, nama_figure, karakter, seri_anime, produsen, skala_ukuran, harga, foto_figure) 
