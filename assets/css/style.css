@@ -1,0 +1,533 @@
+/* FiguSphere - Custom Styles & Micro-interactions */
+
+/* Custom Font Import - Outfit */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #f8fafc; /* Slate 50 */
+}
+
+/* Glassmorphism utility */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.glass-dark {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Scrollbar for premium look */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9; /* Slate 100 */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* Slate 300 */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* Slate 400 */
+}
+
+/* Hover effects and micro-animations */
+.hover-lift {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -8px rgba(13, 148, 136, 0.25); /* Teal glow */
+}
+
+/* Gradient text utility */
+.gradient-text {
+    background: linear-gradient(135deg, #0d9488 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Custom file-upload button */
+.custom-file-input::-webkit-file-upload-button {
+    visibility: hidden;
+    display: none;
+}
+
+/* Simple fade-in animation for page loads */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* =====================================================
+   RESPONSIVE: TABLET (max-width: 768px)
+   ===================================================== */
+@media (max-width: 768px) {
+    /* Main content area */
+    main {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 1.25rem !important;
+        padding-bottom: 1.25rem !important;
+    }
+
+    /* Page headings */
+    main h1 {
+        font-size: 1.5rem !important;
+    }
+    main h1 + p,
+    main > div > div > p {
+        font-size: 0.8rem !important;
+    }
+
+    /* Form containers */
+    form .grid {
+        gap: 0.75rem !important;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE: MOBILE (max-width: 639px)
+   ===================================================== */
+@media (max-width: 639px) {
+    /* --- NAVBAR --- */
+    nav .max-w-7xl {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    nav .max-w-7xl > div {
+        gap: 0.125rem;
+    }
+    /* Logo text smaller */
+    nav span.text-xl {
+        font-size: 1rem !important;
+    }
+    /* Logo box smaller */
+    nav .w-10 {
+        width: 2rem !important;
+        height: 2rem !important;
+        border-radius: 0.5rem !important;
+    }
+    nav .w-10 svg {
+        width: 1.125rem !important;
+        height: 1.125rem !important;
+    }
+    /* Nav buttons tighter */
+    nav a.inline-flex,
+    nav button.inline-flex {
+        padding: 0.375rem !important;
+    }
+    /* Profile section */
+    nav .border-l {
+        padding-left: 0.375rem !important;
+        margin-left: 0.125rem !important;
+        gap: 0.25rem !important;
+    }
+    nav .border-l a {
+        padding: 0.375rem !important;
+    }
+    nav .border-l a svg {
+        width: 1.125rem !important;
+        height: 1.125rem !important;
+    }
+
+    /* --- MAIN CONTENT --- */
+    main {
+        padding-left: 0.625rem !important;
+        padding-right: 0.625rem !important;
+        padding-top: 0.75rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    /* Dashboard heading */
+    main h1 {
+        font-size: 1.125rem !important;
+        line-height: 1.5rem !important;
+    }
+    main h1 + p {
+        font-size: 0.7rem !important;
+        margin-top: 0.125rem !important;
+    }
+
+    /* "Tambah Figure Baru" CTA button */
+    main > div:first-of-type a[href="add.php"],
+    a.bg-gradient-to-r {
+        font-size: 0.7rem !important;
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 0.75rem !important;
+    }
+    main > div:first-of-type a[href="add.php"] svg,
+    a.bg-gradient-to-r svg {
+        width: 0.875rem !important;
+        height: 0.875rem !important;
+        margin-right: 0.25rem !important;
+    }
+
+    /* --- STATS PANEL (force 2-col grid) --- */
+    .grid.grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.375rem !important;
+    }
+    .grid.grid-cols-2 > div {
+        padding: 0.625rem !important;
+        border-radius: 0.875rem !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    .grid.grid-cols-2 > div > div:first-child {
+        padding: 0.375rem !important;
+        border-radius: 0.5rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    .grid.grid-cols-2 > div > div:first-child svg {
+        width: 1rem !important;
+        height: 1rem !important;
+    }
+    .grid.grid-cols-2 > div p {
+        font-size: 0.6rem !important;
+        line-height: 0.875rem !important;
+    }
+    .grid.grid-cols-2 > div p:last-child {
+        font-size: 0.75rem !important;
+        line-height: 1rem !important;
+    }
+    .grid.grid-cols-2 > div p span {
+        font-size: 0.55rem !important;
+    }
+
+    /* --- FILTER / SEARCH SECTION --- */
+    .bg-white.shadow-sm.rounded-3xl {
+        padding: 0.75rem !important;
+        border-radius: 0.875rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    .bg-white.shadow-sm.rounded-3xl form {
+        gap: 0.5rem !important;
+    }
+    .bg-white.shadow-sm.rounded-3xl label {
+        font-size: 0.6rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    .bg-white.shadow-sm.rounded-3xl input,
+    .bg-white.shadow-sm.rounded-3xl select {
+        font-size: 0.7rem !important;
+        padding: 0.5rem 0.625rem !important;
+        border-radius: 0.75rem !important;
+    }
+    .bg-white.shadow-sm.rounded-3xl input[type="text"] {
+        padding-left: 2rem !important;
+    }
+    /* Filter buttons */
+    .bg-white.shadow-sm.rounded-3xl .border-t {
+        padding-top: 0.5rem !important;
+    }
+    .bg-white.shadow-sm.rounded-3xl button[type="submit"],
+    .bg-white.shadow-sm.rounded-3xl a {
+        font-size: 0.6rem !important;
+        padding: 0.375rem 0.625rem !important;
+        border-radius: 0.5rem !important;
+    }
+
+    /* --- FIGURE CARDS GRID (FORCE 2 COLUMNS!) --- */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.375rem !important;
+    }
+
+    /* Individual figure card */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] > div {
+        border-radius: 0.75rem !important;
+        overflow: hidden;
+    }
+
+    /* Card details section */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] > div > div.flex-grow {
+        padding: 0.4rem !important;
+    }
+
+    /* Brand badge */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] span.bg-slate-100 {
+        font-size: 0.45rem !important;
+        padding: 0.0625rem 0.1875rem !important;
+        border-radius: 0.1875rem !important;
+    }
+
+    /* Series name */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] span.text-slate-400.truncate,
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] span.font-medium.truncate {
+        font-size: 0.5rem !important;
+        max-width: 55px !important;
+    }
+
+    /* Figure name */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] h4 {
+        font-size: 0.625rem !important;
+        line-height: 0.875rem !important;
+        margin-bottom: 0.0625rem !important;
+        -webkit-line-clamp: 2;
+    }
+
+    /* Character name */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] p.text-slate-500 {
+        font-size: 0.5rem !important;
+        margin-bottom: 0 !important;
+        line-height: 0.75rem !important;
+    }
+
+    /* Kolektor badge */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] p.flex.items-center {
+        font-size: 0.45rem !important;
+        margin-bottom: 0.125rem !important;
+    }
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] p.flex.items-center svg {
+        width: 0.5rem !important;
+        height: 0.5rem !important;
+        margin-right: 0.125rem !important;
+    }
+
+    /* Price & Actions row */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t {
+        padding-top: 0.25rem !important;
+        margin-top: 0.125rem !important;
+        gap: 0.125rem !important;
+    }
+
+    /* Harga label */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t span.uppercase,
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t span.tracking-wider {
+        font-size: 0.375rem !important;
+        display: none !important;
+    }
+
+    /* Price number */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t span.font-extrabold {
+        font-size: 0.575rem !important;
+        line-height: 0.875rem !important;
+    }
+
+    /* ACTION BUTTONS (Edit & Delete) - FORCE VISIBLE */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t .flex-shrink-0 {
+        display: flex !important;
+        gap: 0.125rem !important;
+    }
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t .flex-shrink-0 a,
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t .flex-shrink-0 button {
+        padding: 0.1875rem !important;
+        border-radius: 0.3125rem !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        min-width: 1.375rem !important;
+        min-height: 1.375rem !important;
+    }
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t .flex-shrink-0 svg {
+        width: 0.75rem !important;
+        height: 0.75rem !important;
+    }
+
+    /* Scale badge on image */
+    .absolute.top-3.right-3 {
+        top: 0.25rem !important;
+        right: 0.25rem !important;
+        padding: 0.0625rem 0.25rem !important;
+        font-size: 0.4375rem !important;
+        border-radius: 0.25rem !important;
+    }
+
+    /* Spacer divs */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] > div .mb-3,
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] > div .mb-2 {
+        margin-bottom: 0.125rem !important;
+    }
+
+    /* --- ALERT / NOTIFICATION BOXES --- */
+    .alert-box {
+        padding: 0.625rem !important;
+        border-radius: 0.75rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    .alert-box span {
+        font-size: 0.7rem !important;
+    }
+    .alert-box svg {
+        width: 1rem !important;
+        height: 1rem !important;
+    }
+
+    /* --- DELETE MODAL --- */
+    #delete-modal > div {
+        margin: 0.75rem !important;
+        padding: 1rem !important;
+        border-radius: 1rem !important;
+    }
+    #delete-modal h3 {
+        font-size: 1rem !important;
+    }
+    #delete-modal p {
+        font-size: 0.75rem !important;
+    }
+
+    /* --- LIGHTBOX MODAL --- */
+    #image-lightbox-modal > div {
+        margin: 0.375rem !important;
+        border-radius: 0.875rem !important;
+        max-height: 92vh !important;
+    }
+    #image-lightbox-modal .text-2xl {
+        font-size: 1rem !important;
+    }
+    #image-lightbox-modal .text-sm {
+        font-size: 0.7rem !important;
+    }
+    #image-lightbox-modal button.absolute {
+        top: 0.375rem !important;
+        right: 0.375rem !important;
+        padding: 0.25rem !important;
+    }
+    #image-lightbox-modal button.absolute svg {
+        width: 1.125rem !important;
+        height: 1.125rem !important;
+    }
+
+    /* --- ADD/EDIT FORM PAGE --- */
+    /* Form container card */
+    .bg-white.rounded-3xl.border.overflow-hidden form {
+        padding: 0.875rem !important;
+    }
+    .bg-white.rounded-3xl.border.overflow-hidden form .grid {
+        gap: 0.625rem !important;
+    }
+    .bg-white.rounded-3xl.border.overflow-hidden {
+        border-radius: 0.875rem !important;
+    }
+
+    /* Form labels */
+    .bg-white.rounded-3xl.border.overflow-hidden label {
+        font-size: 0.7rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    /* Form inputs */
+    .bg-white.rounded-3xl.border.overflow-hidden input[type="text"],
+    .bg-white.rounded-3xl.border.overflow-hidden input[type="number"],
+    .bg-white.rounded-3xl.border.overflow-hidden select {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    /* Form submit buttons row */
+    .bg-white.rounded-3xl.border.overflow-hidden .border-t {
+        padding-top: 0.75rem !important;
+        gap: 0.5rem !important;
+    }
+    .bg-white.rounded-3xl.border.overflow-hidden .border-t a,
+    .bg-white.rounded-3xl.border.overflow-hidden .border-t button {
+        padding: 0.625rem 1rem !important;
+        font-size: 0.75rem !important;
+        border-radius: 0.75rem !important;
+    }
+
+    /* Upload zone */
+    .bg-white.rounded-3xl.border.overflow-hidden label[for="foto_figure"] div {
+        padding: 1rem !important;
+    }
+
+    /* Empty state */
+    .text-center.py-16 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+    .text-center.py-16 h3 {
+        font-size: 1rem !important;
+    }
+    .text-center.py-16 p {
+        font-size: 0.75rem !important;
+    }
+
+    /* Quick switcher dropdown */
+    #switcher-dropdown {
+        width: 11rem !important;
+        right: -0.5rem !important;
+        border-radius: 0.75rem !important;
+    }
+    #switcher-dropdown a {
+        padding: 0.375rem 0.75rem !important;
+        font-size: 0.7rem !important;
+    }
+    #switcher-dropdown span.text-\[10px\] {
+        font-size: 0.5rem !important;
+    }
+
+    /* Hover lift reduce on mobile to prevent z-index weirdness */
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px -4px rgba(13, 148, 136, 0.15);
+    }
+}
+
+/* =====================================================
+   RESPONSIVE: VERY SMALL MOBILE (max-width: 374px)
+   ===================================================== */
+@media (max-width: 374px) {
+    /* Even tighter spacing */
+    main {
+        padding-left: 0.375rem !important;
+        padding-right: 0.375rem !important;
+    }
+
+    /* Stats - even smaller */
+    .grid.grid-cols-2 > div {
+        padding: 0.375rem !important;
+    }
+    .grid.grid-cols-2 > div p:last-child {
+        font-size: 0.625rem !important;
+    }
+
+    /* Figure cards */
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] {
+        gap: 0.25rem !important;
+    }
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] > div > div.flex-grow {
+        padding: 0.25rem !important;
+    }
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] h4 {
+        font-size: 0.5625rem !important;
+    }
+    div[class*="grid-cols-2"][class*="md:grid-cols-3"] .border-t span.font-extrabold {
+        font-size: 0.5rem !important;
+    }
+
+    /* Hide logo text on very small */
+    nav span.text-xl {
+        font-size: 0 !important;
+    }
+    nav .w-10 {
+        width: 1.75rem !important;
+        height: 1.75rem !important;
+    }
+}
